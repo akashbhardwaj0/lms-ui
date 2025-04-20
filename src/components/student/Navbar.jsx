@@ -2,13 +2,20 @@ import React, { useContext, useState } from "react";
 import { assets } from "../../assets/assets.js";
 import { Link } from "react-router-dom";
 import { AppContext } from "../../context/AppContext.jsx";
+import Signup from "../Signup.jsx";
 
 function Navbar() {
-  const [user, setUser, isEducator, setIsEducator] = useState(false)
-  const{navigate} = useContext(AppContext)
+  // const [user, setUser, 
+  const [isEducator, setIsEducator] = useState(false)
+  const [signup, setSignup] = useState(false)
+  const{navigate, user} = useContext(AppContext)
+
   const createAccount = ()=>{
     setUser(!user)
+    setSignup(!signup)
   }
+
+  
   const isCourseListPage = location.pathname.includes("/course-list");
   return (
     <div
@@ -24,7 +31,7 @@ function Navbar() {
       />
       <div className="hidden md:flex items-center gap-5 text-gray-500">
       <div className="flex items-center gap-5">
-       {user&& <>
+       {user && <>
           <button onClick={()=>navigate('/educator')}>{isEducator?'Educator Dashboard':'Become Educator'}</button>
           <Link to="/my-enrollments">My Enrollments</Link>
           </>
@@ -32,15 +39,25 @@ function Navbar() {
         }
            </div>
        {
-        user? < img src={assets.user_icon} onClick={()=>createAccount()}/>: <button onClick={()=>createAccount()}className="bg-blue-600 text-white px-5 py-2 rounded-full">
+        user ? < img src={assets.user_icon} onClick={()=>createAccount()}/>: 
+        (<div className="flex gap-5">
+
+<button onClick={()=>navigate('/login')}className="bg-blue-600 text-white px-5 py-2 rounded-full">
+        Sign In
+      </button>
+      <button onClick={()=>navigate('/sign-up')}className="bg-blue-600 text-white px-5 py-2 rounded-full">
         Create Account
       </button>
+
+        </div>)
+        
+     
        }
         </div>
         <div className="md:hidden flex items-center gap-2 sm:gap-5 text-gray-500">
       
           <div className="flex items-center gap-1 sm:gap-2 max-sm:text-xs">
-          {user&& 
+          {user && 
           <>
          <button onClick={()=>navigate('/educator')}>{isEducator?'Educator Dashboard':'Become Educator'}</button>
           <Link to="/my-enrollments">My Enrollments</Link>

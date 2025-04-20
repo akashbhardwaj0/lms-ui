@@ -13,11 +13,22 @@ export const AppContextProvider = (props) => {
   const [allCourses, setAllCourses] = useState([]);
   const [isEducator, setIsEducator] = useState(true);
   const [enrolledCourses, setEnrolledCourses] = useState([]);
+  const [user, setUser] = useState("");
 
   // Function to fetch all Course Data
   const fetchAllCourses = async () => {
     setAllCourses(dummyCourses)
   };
+
+  // Set Current User
+  const storeUser = ()=>{
+        const newUser = localStorage.getItem("signIn Data")
+    if(newUser){
+       setUser(newUser)
+    }
+  }
+
+
 
   // Function to Calculate average rating of course
   const calculateRating = (course) => {
@@ -82,7 +93,9 @@ export const AppContextProvider = (props) => {
     calculateCourseDuration,
     calculateNoOfLectures,
     enrolledCourses,
-    fetchUserEnrolledCourses
+    fetchUserEnrolledCourses,
+    storeUser,
+    user
   };
 
   return (
