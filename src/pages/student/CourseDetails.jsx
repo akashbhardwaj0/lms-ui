@@ -6,6 +6,7 @@ import Loading from "../../components/student/Loading";
 import humanizeDuration from "humanize-duration";
 import Footer from "../../components/student/Footer";
 import YouTube from "react-youtube";
+import { toast } from "react-toastify";
 
 const CourseDetails = () => {
 
@@ -24,15 +25,90 @@ const CourseDetails = () => {
     calculateCourseDuration,
     calculateNoOfLectures,
     currency,
+    backendUrl,
+    user,
+    userData,
+    setUserData,
+    authToken
   } = useContext(AppContext);
 
+ 
+
   const fetchCourseData = async () => {
-    const findCourse = allCourses.find((course) => course._id === id);
-    setCourseData(findCourse);
+
+    try {
+      const response = await fetch(backendUrl+'/api/course/'+id)
+
+      const result = await response.json()
+
+      if(result.success){
+        toast.success(result.message)
+        setCourseData(result.courseData)
+
+      }
+      toast.error(result.message)
+      
+    } catch (error) {
+      console.log(error)
+      
+    }
   };
+
+const enrollCourse = async ()=>{
+  console.log("enrollCourse function started");
+  try {
+    if(!userData){
+      return toast.warn("Login to Enroll")
+    }
+    if(isAlreadyEnrolled){
+      return toast.warn("Already Enrolled")
+
+    }
+    console.log("Sending request with courseId:", courseData._id);
+    const response = await fetch(backendUrl+"/api/user/purchase",{
+      method:"POST",
+      headers:{
+        "Content-Type": "application/json",
+        "Origin": "http://localhost:5173",
+        Authorization: authToken,
+      },
+      body: JSON.stringify({ courseId: courseData._id }),
+    })
+    console.log("Fetch complete. Status:", response.status);
+    
+    const result = await response.json();
+    console.log("result: ", result)
+  if(result.success){
+    // const {session_Url} = result;
+    console.log("Redirecting to:", result.session_url);
+    window.location.replace(result.session_url);
+
+    
+  }else {
+    toast.error(result.message || "Purchase failed!");
+    console.log("Purchase error:", result.message);
+  }
+
+
+  } catch (error) {    
+    console.error("Fetch failed:", error);
+
+    
+  }
+}
+
+
   useEffect(() => {
     fetchCourseData();
   }, [allCourses]);
+  
+  
+  useEffect(() => {
+    if(userData && courseData){
+      setIsAlreadyEnrolled(userData?.enrolledCourses?.includes(courseData._id));
+    }
+  }, [userData, courseData]);
+  
 
   const toggleSection = (index) => {
     setOpenSection((prev) => ({ ...prev, [index]: !prev[index] }));
@@ -162,7 +238,7 @@ const CourseDetails = () => {
           {/* Review and ratings */}
           <div>{starRatings()}</div>
 
-          <p className="text-sm">Course by{" "}<span className="text-blue-600 underline "> Richard James</span></p>
+          <p className="text-sm">Course by{" "}<span className="text-blue-600 underline "> {courseData.educator.name}</span></p>
           <div className="pt-8 text-gray-800">
             <h2 className="text-xl font-semibold">Course Structure</h2>
             {courseStructure()}
@@ -236,7 +312,7 @@ const CourseDetails = () => {
               </div>
               
             </div>
-            <button className="md:mt-6 mt-4 w-full py-3 rounded bg-blue-600 text-white font-medium  ">{isAlreadyEnrolled?'Already Enrolled':'Enroll Now'}</button>
+            <button onClick = {enrollCourse} className="md:mt-6 mt-4 w-full py-3 rounded bg-blue-600 text-white font-medium  ">{isAlreadyEnrolled?'Already Enrolled':'Enroll Now'}</button>
             <div className="pt-6">
               <p className="md:text-xl text-lg font-medium text-gray-800">What's in the course?</p>
               <ul className="ml-4 pt-2 text-sm md:text-[15px, 20px] list-disc text-gray-500">

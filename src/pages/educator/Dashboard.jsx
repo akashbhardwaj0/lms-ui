@@ -3,19 +3,40 @@ import { Outlet } from "react-router-dom";
 import { assets, dummyDashboardData } from "../../assets/assets";
 import Loading from "../../components/student/Loading";
 import { AppContext } from "../../context/AppContext";
+import { toast } from "react-toastify";
 
 const Dashboard = () => {
-  const { currency } = useContext(AppContext);
+  const { currency, backendUrl, authToken, isEducator } = useContext(AppContext);
 
   const [dashboardData, setDashboardData] = useState(null);
 
   const fetchdashboardData = () => {
-    setDashboardData(dummyDashboardData);
+    fetch(backendUrl + "/api/educator/dashboard", {
+      method: "GET",
+      headers: {
+        Authorization: authToken,
+      },
+    })
+      .then((response) => response.json())
+      .then((result) => {
+        if (result.success) {
+          setDashboardData(result.dashboardData);
+          console.log("Dashboard data: ", result.dashboardData.enrolledStudentsData.length);
+        } else {
+          toast.error(result.message);
+          console.log("Dashboard data: ",result.message)
+        }
+      })
+      .catch((error) => {
+        console.log(error);
+      });
   };
+  
+
 
   useEffect(() => {
-    fetchdashboardData();
-  }, []);
+  if(isEducator){  fetchdashboardData()}
+  }, [isEducator]);
 
   const renderEnrollmentData = (dashboardData) => {
     return dashboardData.enrolledStudentsData.map((item, index) => (

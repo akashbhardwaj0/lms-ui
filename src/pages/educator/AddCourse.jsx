@@ -1,9 +1,12 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import Quill from "quill";
 import { assets } from "../../assets/assets";
 import uniquid from "uniquid";
+import { toast } from "react-toastify";
+import { AppContext } from "../../context/AppContext";
 
 const AddCourse = () => {
+  const {backendUrl, authToken} = useContext(AppContext);
   const quillRef = useRef(null);
   const editorRef = useRef(null);
   const [courseTitle, setCourseTitle] = useState("");
@@ -66,35 +69,78 @@ const AddCourse = () => {
     }
   };
 
-  const addLecture = ()=>{
+  const addLecture = () => {
     setChapters(
-      chapters.map((chapter)=>{
-        if(chapter.chapterId === currentChapterId){
-          const newLecture={
-            ...lectureDetails, 
-            lectureOrder: chapter.chapterContent.length>0 ? 
-            chapter.chapterContent.slice(-1)[0].lectureOrder+1 : 
-            1, lectureId:uniquid()
-          }
+      chapters.map((chapter) => {
+        if (chapter.chapterId === currentChapterId) {
+          const newLecture = {
+            ...lectureDetails,
+            lectureOrder:
+              chapter.chapterContent.length > 0
+                ? chapter.chapterContent.slice(-1)[0].lectureOrder + 1
+                : 1,
+            lectureId: uniquid(),
+          };
           chapter.chapterContent.push(newLecture);
         }
         return chapter;
       })
-    )
-    setShowPopup(false)
+    );
+    setShowPopup(false);
     setLectureDetails({
-      lectureTitle:'',
-      lectureDuration:'',
-      lectureUrl:'',
-      isPreviewFree:false,
-    })
-  }
+      lectureTitle: "",
+      lectureDuration: "",
+      lectureUrl: "",
+      isPreviewFree: false,
+    });
+  };
 
-  const handleSubmit = async (e)=>{
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
+    try {
+      if (!image) {
+        toast.error("Thumbnail Not Selected");
+      }
 
-  }
+      const courseData = {
+        courseTitle,
+        courseDescription: quillRef.current.root.innerHTML,
+        coursePrice: Number(coursePrice),
+        discount: Number(discount),
+        courseContent: chapters,
+      };
+
+      const formData = new FormData();
+      formData.append("courseData", JSON.stringify(courseData));
+      formData.append("image", image);
+
+      console.log(formData.courseData, formData.image)
+
+      const response = await fetch("http://localhost:5000/api/educator/add-course", {
+        method: "POST",
+        headers: {
+          Authorization: authToken,
+        },
+        body: formData,
+      });
+
+      const result = await response.json();
+      if (result.success) {
+        toast.success(result.message);
+        setCourseTitle("");
+        setCoursesPrice(0);
+        setDiscount(0);
+        setImage(null);
+        setChapters([]);
+        quillRef.current.root.innerHTML = "";
+      } else {
+        toast.error(result.message);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   useEffect(() => {
     // Initialize quill once
@@ -108,7 +154,10 @@ const AddCourse = () => {
   return (
     <div>
       <div className="min-h-screen overflow-scroll flex flex-col items-start justify-between md:p-8 md:pb-0 p-4 pt-8 pb-0 ">
-        <form onSubmit = {handleSubmit} className="flex flex-col gap-4 max-w-md w-full text-gray-500 ">
+        <form
+          onSubmit={handleSubmit}
+          className="flex flex-col gap-4 max-w-md w-full text-gray-500 "
+        >
           <div className="flex flex-col gap-1">
             <p> Course Title</p>
             <input
@@ -203,7 +252,7 @@ const AddCourse = () => {
                     src={assets.cross_icon}
                     alt=""
                     className="cursor-pointer"
-                    onClick={()=>handleChapter('remove', chapter.chapterId)}
+                    onClick={() => handleChapter("remove", chapter.chapterId)}
                   />
                 </div>
 
@@ -231,12 +280,20 @@ const AddCourse = () => {
                             src={assets.cross_icon}
                             alt=""
                             className="cursor-pointer"
-                            onClick={()=>handleLecture('remove', chapter.chapterId, lectureIndex)}
+                            onClick={() =>
+                              handleLecture(
+                                "remove",
+                                chapter.chapterId,
+                                lectureIndex
+                              )
+                            }
                           />
                         </div>
                       ))}
-                    <div className="inline-flex bg-gray-100 p-2 rounded cursor-pointer mt-2"
-                    onClick={()=>handleLecture("add", chapter.chapterId)}>
+                    <div
+                      className="inline-flex bg-gray-100 p-2 rounded cursor-pointer mt-2"
+                      onClick={() => handleLecture("add", chapter.chapterId)}
+                    >
                       + Add Lecture
                     </div>
                   </div>

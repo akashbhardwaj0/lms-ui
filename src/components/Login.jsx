@@ -1,28 +1,51 @@
 import { useContext, useState } from "react";
-import { Navigate, useNavigate } from "react-router-dom";
 import { AppContext } from "../context/AppContext";
+import { toast } from "react-toastify";
 
 export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [role, setRole] = useState("");
   const [error, setError] = useState("");
-  const {storeUser, navigate} = useContext(AppContext)
+  const {navigate, backendUrl } = useContext(AppContext)
   
   
 
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
-    if (!email || !password) {
-      setError("Email and password are required");
+    if (!email || !password || !role) {
+      setError("Email, password and role are required");
       return;
     }
-    setError("");
-    const userData = { email, password, role };
-    localStorage.setItem("signIn Data", JSON.stringify(userData));
-    storeUser(userData);
-    console.log("Sign in with data:", userData);
-    navigate("/");
+
+    try {
+      const response = await fetch(backendUrl+"/api/user/login",{
+        method:"POST",
+        headers:{
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({email, password, role})
+      })
+  
+      const result = await response.json();
+      
+      if(result.success){
+        localStorage.setItem("authToken", JSON.stringify(result.authToken))
+        localStorage.setItem("user", JSON.stringify(result.user))
+        toast.success(result.message)
+        setError("")
+        navigate("/")
+      }
+      else{
+        setError(result.message || "Error Login")
+      }
+      
+    } catch (error) {
+      console.log(error)
+      setError("Sign In Error: ", error)
+      
+    };
+
   };
 
   return (

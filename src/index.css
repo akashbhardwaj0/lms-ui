@@ -14,6 +14,14 @@
   display: none;
 }
 
+.react-simple-star-rating {
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center;
+  gap: 4px;
+}
+
+
 .rich-text { font-size: 15px; color: #7A7B7D; }
 
 .rich-text p { margin-bottom: 16px; }

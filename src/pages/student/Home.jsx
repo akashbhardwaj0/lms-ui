@@ -5,12 +5,9 @@ import CourseSection from "../../components/student/CourseSection";
 import TestimonialsSection from "../../components/student/TestimonialsSection";
 import CallToAction from "../../components/student/CallToAction";
 import Footer from "../../components/student/Footer";
-import { AppContext } from "../../context/AppContext";
 
 
 const Home = () => {
-  const {user} = useContext(AppContext)
-  console.log('user in home'+user)
   return (
     <div >
       <Hero />

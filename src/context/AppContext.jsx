@@ -3,32 +3,69 @@ import { createContext } from "react";
 import { useNavigate } from "react-router-dom";
 import humanizeDuration from "humanize-duration";
 import { dummyCourses } from "../assets/assets";
+import { toast } from "react-toastify";
 
 export const AppContext = createContext();
 
 export const AppContextProvider = (props) => {
+
   const currency = import.meta.env.VITE_CURRENCY;
+  const backendUrl = import.meta.env.VITE_BACKEND_URL;
   const navigate = useNavigate();
 
   const [allCourses, setAllCourses] = useState([]);
-  const [isEducator, setIsEducator] = useState(true);
+  const [isEducator, setIsEducator] = useState(false);
   const [enrolledCourses, setEnrolledCourses] = useState([]);
-  const [user, setUser] = useState("");
+  const [userData, setUserData] = useState(null);
+
+  const user = JSON.parse(localStorage.getItem("user"));
+  const authToken = JSON.parse(localStorage.getItem("authToken"));
+  console.log(authToken);
+
+
+  // Function to fetch user details
+  const fetchUserData = async ()=>{
+    if (!authToken) return;
+  
+      try {
+        const response = await fetch(backendUrl+"/api/user/data",{
+          method: "GET",
+          headers:{
+            Authorization: authToken
+          }
+        })
+        const result = await response.json();
+        if(result.success){
+          setUserData(result.user)
+        }else{
+          console.log(result.message)
+          toast.success(result.message)
+        }
+        
+      } catch (error) {
+        console.log(error)
+        toast.error(error)
+        
+      }
+    }
 
   // Function to fetch all Course Data
   const fetchAllCourses = async () => {
-    setAllCourses(dummyCourses)
-  };
+    try {
+      const response = await fetch(`${backendUrl}/api/course/all`);
 
-  // Set Current User
-  const storeUser = ()=>{
-        const newUser = localStorage.getItem("signIn Data")
-    if(newUser){
-       setUser(newUser)
+      const result = await response.json();
+
+      if (result.success) {
+        setAllCourses(result.courses);
+      } else {
+        console.log(result.message);
+        toast.error(result.message);
+      }
+    } catch (error) {
+      console.log(error);
     }
-  }
-
-
+  };
 
   // Function to Calculate average rating of course
   const calculateRating = (course) => {
@@ -39,7 +76,7 @@ export const AppContextProvider = (props) => {
     course.courseRatings.forEach((rating) => {
       totalRating += rating.rating;
     });
-    return totalRating / course.courseRatings.length;
+    return Math.floor(totalRating / course.courseRatings.length)
   };
 
   // Function to create course chapter time
@@ -72,15 +109,44 @@ export const AppContextProvider = (props) => {
 
   // Fetch user enrolled courses
 
-  const fetchUserEnrolledCourses = async ()=>{
-  setEnrolledCourses((prevCourses) => [...prevCourses, ...dummyCourses]);
+  const fetchUserEnrolledCourses = async () => {
+    try {
+      const response = await fetch(backendUrl + "/api/user/enrolled-courses", {
+        method: "GET",
+        headers: {
+          Authorization: authToken,
+        },
+      });
 
-  }
+      const result = await response.json();
+      if (!result.success) {
+        console.log(result.message);
+        toast.error(result.message)
+      }
+
+      setEnrolledCourses(result.enrolledCourses);
+      toast.success(result.message)
+    } catch (error) {
+      console.log(error);
+      toast.error(error)
+    }
+  };
 
   useEffect(() => {
     fetchAllCourses();
-    fetchUserEnrolledCourses()
-  },[dummyCourses]);
+  }, []);
+
+  useEffect(() => {
+    if (authToken && user) {
+      fetchUserData();
+
+      if (user.role === "educator") {
+        setIsEducator(true);
+      }
+
+      fetchUserEnrolledCourses();
+    }
+  }, [authToken]);
 
   const value = {
     currency,
@@ -94,8 +160,13 @@ export const AppContextProvider = (props) => {
     calculateNoOfLectures,
     enrolledCourses,
     fetchUserEnrolledCourses,
-    storeUser,
+    backendUrl,
+    userData,
+    authToken,
+    setUserData,
+    fetchAllCourses,
     user
+
   };
 
   return (
