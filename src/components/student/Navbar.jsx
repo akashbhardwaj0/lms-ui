@@ -10,7 +10,10 @@ function Navbar() {
   const [isUser, setIsUser] = useState(false)
   const {navigate, isEducator, setIsEducator, authToken, backendUrl, user} = useContext(AppContext)
   const isCourseListPage = location.pathname.includes("/course-list");
-  console.log("User: ",user)
+
+  if(user){
+      console.log("User: ",user)
+  }
 
   const becomeEducator = async () => {
   try {
@@ -70,10 +73,10 @@ function Navbar() {
         </div>
         {user ? (
   <div className="relative">
-    <img src={user.imageUrl? user.imageUrl: assets.user_icon} onClick={() => setIsUser((prev) => !prev)} className="cursor-pointer w-8 h-8 rounded-full" alt="user"/>
+    <img src={user.logo? user.logo: assets.user_icon} onClick={() => setIsUser((prev) => !prev)} className="cursor-pointer w-8 h-8 rounded-full" alt="user"/>
     {isUser && (
       <div className="absolute right-0 top-12 z-50">
-        <Profile name = {user.name} email = {user.email} photoUrl ={user.imageUrl} onEdit = {null}/>
+        <Profile name = {user.name} email = {user.email} photoUrl ={user.logo} onEdit = {null}/>
       </div>
     )}
   </div>

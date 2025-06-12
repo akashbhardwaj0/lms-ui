@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import { createContext } from "react";
 import { useNavigate } from "react-router-dom";
 import humanizeDuration from "humanize-duration";
-import { dummyCourses } from "../assets/assets";
 import { toast } from "react-toastify";
 
 export const AppContext = createContext();
