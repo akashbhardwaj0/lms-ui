@@ -115,7 +115,7 @@ const AddCourse = () => {
       formData.append("courseData", JSON.stringify(courseData));
       formData.append("image", image);
 
-      const response = await fetch("http://localhost:5000/api/educator/add-course", {
+      const response = await fetch(backendUrl+"/api/educator/add-course", {
         method: "POST",
         headers: {
           Authorization: authToken,

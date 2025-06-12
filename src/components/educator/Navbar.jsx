@@ -1,15 +1,13 @@
 import React, { useContext, useState } from 'react'
-import { assets, dummyEducatorData } from '../../assets/assets'
+import { assets } from '../../assets/assets'
 import { Link } from 'react-router-dom';
 import { AppContext } from '../../context/AppContext';
-import { toast } from 'react-toastify';
 
 function Navbar() {
-  // const educatorData = dummyEducatorData;
 
    const [isUser, setIsUser] = useState(false)
  
-   const {isEducator, setIsEducator, userData, authToken, backendUrl, navigate, user} = useContext(AppContext)
+   const {user} = useContext(AppContext)
    
    console.log("User: ",user)
 

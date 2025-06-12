@@ -9,7 +9,7 @@
     const [password, setPassword] = useState("");
     const [error, setError] = useState("");
 
-    const {navigate } = useContext(AppContext);
+    const {navigate, backendUrl } = useContext(AppContext);
 
 const handleSignup = async (e) => {
   e.preventDefault();
@@ -28,8 +28,7 @@ const handleSignup = async (e) => {
     if (profilePhoto) {
       formData.append("profilePhoto", profilePhoto); // file object
     }
-
-    const response = await fetch("http://localhost:5000/api/user/register", {
+    const response = await fetch(`${backendUrl}/api/user/register`, {
       method: "POST",
       body: formData, // no Content-Type header! Browser sets it automatically
     });
