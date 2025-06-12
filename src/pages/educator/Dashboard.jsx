@@ -21,10 +21,9 @@ const Dashboard = () => {
       .then((result) => {
         if (result.success) {
           setDashboardData(result.dashboardData);
-          console.log("Dashboard data: ", result.dashboardData.enrolledStudentsData.length);
         } else {
           toast.error(result.message);
-          console.log("Dashboard data: ",result.message)
+          console.log(result.message)
         }
       })
       .catch((error) => {

@@ -11,45 +11,46 @@
 
     const {navigate } = useContext(AppContext);
 
+const handleSignup = async (e) => {
+  e.preventDefault();
 
+  if (!name || !email || !role || !password) {
+    setError("All fields are required");
+    return;
+  }
 
-    const handleSignup = async (e) => {
-      e.preventDefault();
-    
-      if (!name || !email || !role || !password) {
-        setError("All fields are required");
-        return;
-      }
-    
-      try {
-           
-        const response = await fetch("http://localhost:5000/api/user/register", 
-          {
-          method: 'POST',
-          headers: {
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify({name, email, role, password, profilePhoto })
-         });
-    
-        const result = await response.json();
-    
-        if (response.ok) {
-          alert(result.message || "Sign up successful!");
-          localStorage.setItem('authToken', JSON.stringify(result.authToken))
-          localStorage.setItem("user", JSON.stringify(result.user))
-          setError("");
-          navigate("/");
-        } else {
-          setError(result.message || "Signup failed.");
-        }
-      } catch (error) {
-        console.error("Signup error:", error);
-        setError("An error occurred. Please try again later.");
-      }
-    };
-    
-    
+  try {
+    const formData = new FormData();
+    formData.append("name", name);
+    formData.append("email", email);
+    formData.append("role", role);
+    formData.append("password", password);
+    if (profilePhoto) {
+      formData.append("profilePhoto", profilePhoto); // file object
+    }
+
+    const response = await fetch("http://localhost:5000/api/user/register", {
+      method: "POST",
+      body: formData, // no Content-Type header! Browser sets it automatically
+    });
+
+    const result = await response.json();
+
+    if (response.ok) {
+      alert(result.message || "Sign up successful!");
+      localStorage.setItem("authToken", JSON.stringify(result.authToken));
+      localStorage.setItem("user", JSON.stringify(result.user));
+      setError("");
+      navigate("/");
+    } else {
+      setError(result.message || "Signup failed.");
+    }
+  } catch (error) {
+    console.error("Signup error:", error);
+    setError("An error occurred. Please try again later.");
+  }
+};
+
 
     return (
       <div className="flex items-center justify-center min-h-screen bg-gray-100">

@@ -10,9 +10,8 @@ function Navbar() {
    const [isUser, setIsUser] = useState(false)
  
    const {isEducator, setIsEducator, userData, authToken, backendUrl, navigate, user} = useContext(AppContext)
-
-
-   console.log(isEducator, backendUrl, user)
+   
+   console.log("User: ",user)
 
   return (
     <div className='flex items-center justify-between px-4 md:px-8 border-b border-gray-500 py-3' >

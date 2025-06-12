@@ -8,9 +8,9 @@ import { toast } from "react-toastify";
 
 function Navbar() {
   const [isUser, setIsUser] = useState(false)
-  const {navigate, isEducator, setIsEducator, userData, authToken, backendUrl, user} = useContext(AppContext)
+  const {navigate, isEducator, setIsEducator, authToken, backendUrl, user} = useContext(AppContext)
   const isCourseListPage = location.pathname.includes("/course-list");
-  console.log(isEducator, backendUrl, user)
+  console.log("User: ",user)
 
   const becomeEducator = async () => {
   try {
@@ -18,10 +18,9 @@ function Navbar() {
       navigate("/educator");
       return;  
     }
-    console.log("become clicked")
     
     const response = await fetch(backendUrl + "/api/educator/update-role", {
-      method: "GET",
+      method: "GET", 
       headers: {   
         Authorization: authToken
       },
@@ -71,10 +70,10 @@ function Navbar() {
         </div>
         {user ? (
   <div className="relative">
-    <img src={assets.user_icon} onClick={() => setIsUser((prev) => !prev)} className="cursor-pointer w-8 h-8 rounded-full" alt="user"/>
+    <img src={user.imageUrl? user.imageUrl: assets.user_icon} onClick={() => setIsUser((prev) => !prev)} className="cursor-pointer w-8 h-8 rounded-full" alt="user"/>
     {isUser && (
       <div className="absolute right-0 top-12 z-50">
-        <Profile name = {user.name} email = {user.email} photoUrl ={user.logo} onEdit = {null}/>
+        <Profile name = {user.name} email = {user.email} photoUrl ={user.imageUrl} onEdit = {null}/>
       </div>
     )}
   </div>

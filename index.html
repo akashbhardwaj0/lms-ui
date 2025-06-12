@@ -2,12 +2,45 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
+    
+    <!-- Favicon -->
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+
+    <!-- Viewport for responsive design -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <!-- Preconnect to fonts or third-party origins if needed -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+
+    <!-- Preload LCP image (replace with actual path if known) -->
+<!-- <link rel="preload" href="/assets/lcp-image.webp" as="image"> -->
+
+
+    <!-- Preload critical fonts (example) -->
+    <!--
+    <link rel="preload" as="font" href="/fonts/inter.woff2" type="font/woff2" crossorigin />
+    -->
+
+    <!-- Fonts & Styles (inline if critical) -->
+    <!-- Inline critical CSS here or defer non-critical CSS -->
+    <!-- <style>/* critical CSS */</style> -->
+     <link rel="preload" href="/fonts/YourFont.woff2" as="font" type="font/woff2" crossorigin>
+<style>
+  @font-face {
+    font-family: 'YourFont';
+    src: url('/fonts/YourFont.woff2') format('woff2');
+    font-display: swap;
+  }
+</style>
+
+
     <title>LMS</title>
   </head>
   <body>
     <div id="root"></div>
-    <script type="module" src="/src/main.jsx"></script>
+
+    <!-- Add defer or async to prevent blocking render -->
+    <script type="module" src="/src/main.jsx" defer></script>
   </body>
 </html>

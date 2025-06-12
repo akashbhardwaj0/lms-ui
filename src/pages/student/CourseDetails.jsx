@@ -55,7 +55,6 @@ const CourseDetails = () => {
   };
 
 const enrollCourse = async ()=>{
-  console.log("enrollCourse function started");
   try {
     if(!userData){
       return toast.warn("Login to Enroll")
@@ -64,7 +63,6 @@ const enrollCourse = async ()=>{
       return toast.warn("Already Enrolled")
 
     }
-    console.log("Sending request with courseId:", courseData._id);
     const response = await fetch(backendUrl+"/api/user/purchase",{
       method:"POST",
       headers:{
@@ -74,12 +72,10 @@ const enrollCourse = async ()=>{
       },
       body: JSON.stringify({ courseId: courseData._id }),
     })
-    console.log("Fetch complete. Status:", response.status);
     
     const result = await response.json();
     console.log("result: ", result)
   if(result.success){
-    // const {session_Url} = result;
     console.log("Redirecting to:", result.session_url);
     window.location.replace(result.session_url);
 

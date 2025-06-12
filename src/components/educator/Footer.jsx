@@ -2,6 +2,8 @@ import React from "react";
 import { assets } from "../../assets/assets";
 
 function Footer() {
+  console.log("footer loaded")
+  
   return (
     <footer className="flex md:flex-row flex-col-reverse items-center justify-between text-left w-full px-8 border-t">
       <div className="flex items-center gap-4 ">
@@ -29,3 +31,4 @@ function Footer() {
 }
 
 export default Footer;
+

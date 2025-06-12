@@ -22,8 +22,6 @@ const StudentsEnrolled = () => {
       const result = await response.json();
 
       if (result.success) {
-        console.log("Enroll data: ", result.enrolledStudents.student?.imageUrl);
-
         setEnrolledStudents(result.enrolledStudents);
       } else {
         toast.error(result.message);

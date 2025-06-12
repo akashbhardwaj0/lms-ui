@@ -1,7 +1,6 @@
 import React from 'react'
 import { assets } from '../../assets/assets'
 import SearchBar from './SearchBar'
-import { useNavigate } from 'react-router-dom'
 
 function Hero() {
   return (

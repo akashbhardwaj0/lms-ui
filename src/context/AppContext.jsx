@@ -20,7 +20,7 @@ export const AppContextProvider = (props) => {
 
   const user = JSON.parse(localStorage.getItem("user"));
   const authToken = JSON.parse(localStorage.getItem("authToken"));
-  console.log(authToken);
+  // console.log(authToken);
 
 
   // Function to fetch user details
